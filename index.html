@@ -17,25 +17,25 @@ body {
 
 .container {
   background: white;
-  padding: 30px;
+  padding: 40px;
   border-radius: 12px;
   width: 90%;
-  max-width: 400px;
+  max-width: 700px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 input {
-  width: 80%;
-  padding: 10px;
-  margin: 8px 0;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
 
 button {
-  margin-top: 15px;
-  padding: 10px 20px;
+  margin-top: 20px;
+  padding: 12px 24px;
   border: none;
   border-radius: 8px;
   background: black;
@@ -46,6 +46,18 @@ button {
 #result {
   margin-top: 20px;
   text-align: left;
+  line-height: 1.6;
+}
+
+.footer {
+  margin-top: 30px;
+  font-size: 14px;
+}
+
+.footer a {
+  color: black;
+  text-decoration: none;
+  margin: 0 10px;
 }
 </style>
 
@@ -58,17 +70,23 @@ button {
 <h2>おすすめ本ジェネレータ</h2>
 <p>好きな本を5冊入力してね</p>
 
-<input id="b1" list="books"><br>
-<input id="b2" list="books"><br>
-<input id="b3" list="books"><br>
-<input id="b4" list="books"><br>
-<input id="b5" list="books"><br>
+<input id="b1" list="books">
+<input id="b2" list="books">
+<input id="b3" list="books">
+<input id="b4" list="books">
+<input id="b5" list="books">
 
 <datalist id="books"></datalist>
 
 <button onclick="recommend()">おすすめを見る</button>
 
 <div id="result"></div>
+
+<!-- ▼ フッター -->
+<div class="footer">
+  <a href="about.html">About</a> |
+  <a href="privacy.html">Privacy</a>
+</div>
 
 </div>
 
@@ -82,7 +100,14 @@ const users = [
   ["グレート・ギャツビー","華麗なるギャツビー","夜はやさし"],
   ["1Q84","ノルウェイの森","色彩を持たない多崎つくる"],
   ["ねじまき鳥クロニクル","スプートニクの恋人","ダンスダンスダンス"],
-  ["明暗","三四郎","それから","門"]
+  ["明暗","三四郎","それから","門"],
+  ["海辺のカフカ","風の歌を聴け","1973年のピンボール"],
+  ["老人と海","誰がために鐘は鳴る"],
+  ["こころ","夢十夜"],
+  ["坊っちゃん","草枕"],
+  ["1Q84","騎士団長殺し"],
+  ["ノルウェイの森","国境の南、太陽の西"],
+  ["グレート・ギャツビー","楽園のこちら側"]
 ];
 
 const allBooks = [...new Set(users.flat())];
