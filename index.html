@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>おすすめ本ジェネレータ</title>
+</head>
+<body style="font-family:sans-serif; text-align:center;">
+
+<h2>おすすめ本ジェネレータ</h2>
+
+<p>好きな本を5冊入力してね</p>
+
+<input id="b1" list="books"><br><br>
+<input id="b2" list="books"><br><br>
+<input id="b3" list="books"><br><br>
+<input id="b4" list="books"><br><br>
+<input id="b5" list="books"><br><br>
+
+<datalist id="books"></datalist>
+
+<button onclick="recommend()">おすすめを見る</button>
+
+<h3>結果</h3>
+<div id="result"></div>
+
+<script>
+
+// ▼ データ
+const users = [
+  ["明暗","ねじまき鳥クロニクル","海辺のカフカ","1Q84","ノルウェイの森"],
+  ["グレート・ギャツビー","日はまた昇る","武器よさらば","老人と海"],
+  ["ねじまき鳥クロニクル","海辺のカフカ","世界の終りとハードボイルドワンダーランド"],
+  ["明暗","こころ","坊っちゃん","吾輩は猫である"],
+  ["グレート・ギャツビー","華麗なるギャツビー","夜はやさし"],
+  ["1Q84","ノルウェイの森","色彩を持たない多崎つくる"],
+  ["ねじまき鳥クロニクル","スプートニクの恋人","ダンスダンスダンス"],
+  ["明暗","三四郎","それから","門"],
+  ["海辺のカフカ","風の歌を聴け","1973年のピンボール"],
+  ["老人と海","誰がために鐘は鳴る"],
+  ["こころ","夢十夜"],
+  ["坊っちゃん","草枕"],
+  ["1Q84","騎士団長殺し"],
+  ["ノルウェイの森","国境の南、太陽の西"],
+  ["グレート・ギャツビー","楽園のこちら側"]
+];
+
+// ▼ サジェスト
+const allBooks = [...new Set(users.flat())];
+const datalist = document.getElementById("books");
+
+allBooks.forEach(book => {
+  let option = document.createElement("option");
+  option.value = book;
+  datalist.appendChild(option);
+});
+
+// ▼ レコメンド
+function recommend(){
+  let input = [
+    b1.value, b2.value, b3.value, b4.value, b5.value
+  ].filter(v => v !== "");
+
+  let scores = {};
+
+  users.forEach(user => {
+    let match = user.filter(book => input.includes(book)).length;
+
+    if(match > 0){
+      user.forEach(book => {
+        if(!input.includes(book)){
+          scores[book] = (scores[book] || 0) + match;
+        }
+      });
+    }
+  });
+
+  let sorted = Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,25);
+
+  let html = "";
+  sorted.forEach(([book,score])=>{
+    html += book + " ("+score+")<br>";
+  });
+
+  document.getElementById("result").innerHTML = html || "候補が足りないかも";
+}
+
+</script>
+
+</body>
+</html>
