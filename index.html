@@ -5,57 +5,47 @@
 <title>おすすめ本ジェネレータ</title>
 
 <style>
-body{
-  margin:0;
-  font-family: -apple-system, BlinkMacSystemFont;
-  background: linear-gradient(135deg,#1e1e2f,#2c2c54);
-  color:white;
-  text-align:center;
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+  font-family: sans-serif;
 }
 
-.container{
-  max-width:400px;
-  margin:80px auto;
-  padding:30px;
-  background:rgba(255,255,255,0.05);
-  border-radius:20px;
-  backdrop-filter:blur(10px);
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-h2{
-  margin-bottom:10px;
+input {
+  width: 80%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-p{
-  color:#aaa;
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: black;
+  color: white;
+  font-size: 16px;
 }
 
-input{
-  width:90%;
-  padding:10px;
-  margin:8px;
-  border:none;
-  border-radius:10px;
-  outline:none;
-}
-
-button{
-  padding:12px 20px;
-  margin-top:15px;
-  border:none;
-  border-radius:10px;
-  background:#6c5ce7;
-  color:white;
-  font-weight:bold;
-}
-
-button:hover{
-  opacity:0.8;
-}
-
-#result{
-  margin-top:20px;
-  text-align:left;
+#result {
+  margin-top: 20px;
+  text-align: left;
 }
 </style>
 
@@ -92,14 +82,7 @@ const users = [
   ["グレート・ギャツビー","華麗なるギャツビー","夜はやさし"],
   ["1Q84","ノルウェイの森","色彩を持たない多崎つくる"],
   ["ねじまき鳥クロニクル","スプートニクの恋人","ダンスダンスダンス"],
-  ["明暗","三四郎","それから","門"],
-  ["海辺のカフカ","風の歌を聴け","1973年のピンボール"],
-  ["老人と海","誰がために鐘は鳴る"],
-  ["こころ","夢十夜"],
-  ["坊っちゃん","草枕"],
-  ["1Q84","騎士団長殺し"],
-  ["ノルウェイの森","国境の南、太陽の西"],
-  ["グレート・ギャツビー","楽園のこちら側"]
+  ["明暗","三四郎","それから","門"]
 ];
 
 const allBooks = [...new Set(users.flat())];
@@ -112,17 +95,19 @@ allBooks.forEach(book => {
 });
 
 function recommend(){
-  let input = [b1.value,b2.value,b3.value,b4.value,b5.value].filter(v=>v);
+  let input = [
+    b1.value, b2.value, b3.value, b4.value, b5.value
+  ].filter(v => v !== "");
 
   let scores = {};
 
-  users.forEach(user=>{
-    let match = user.filter(book=>input.includes(book)).length;
+  users.forEach(user => {
+    let match = user.filter(book => input.includes(book)).length;
 
-    if(match>0){
-      user.forEach(book=>{
+    if(match > 0){
+      user.forEach(book => {
         if(!input.includes(book)){
-          scores[book]=(scores[book]||0)+match;
+          scores[book] = (scores[book] || 0) + match;
         }
       });
     }
@@ -134,11 +119,10 @@ function recommend(){
 
   let html = "";
   sorted.forEach(([book,score])=>{
-    html += "・"+book+"<br>";
+    html += book + " ("+score+")<br>";
   });
 
-  document.getElementById("result").innerHTML =
-    html || "候補がまだ少ないかも";
+  document.getElementById("result").innerHTML = html || "候補が足りないかも";
 }
 
 </script>
