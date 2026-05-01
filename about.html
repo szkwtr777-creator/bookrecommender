@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>おすすめ本ジェネレータ</title>
+<title>About</title>
 
 <style>
 body {
@@ -17,47 +17,17 @@ body {
 
 .container {
   background: white;
-  padding: 40px;
+  padding: 30px;
   border-radius: 12px;
   width: 90%;
-  max-width: 700px;
-  text-align: center;
+  max-width: 500px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-button {
+a {
+  display: inline-block;
   margin-top: 20px;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background: black;
-  color: white;
-  font-size: 16px;
-}
-
-#result {
-  margin-top: 20px;
-  text-align: left;
-  line-height: 1.6;
-}
-
-.footer {
-  margin-top: 30px;
-  font-size: 14px;
-}
-
-.footer a {
   color: black;
-  text-decoration: none;
-  margin: 0 10px;
 }
 </style>
 
@@ -67,90 +37,23 @@ button {
 
 <div class="container">
 
-<h2>おすすめ本ジェネレータ</h2>
-<p>好きな本を5冊入力してね</p>
+<h2>About</h2>
 
-<input id="b1" list="books">
-<input id="b2" list="books">
-<input id="b3" list="books">
-<input id="b4" list="books">
-<input id="b5" list="books">
+<p>
+このサイトは、ユーザーが入力した好きな本をもとに、他のユーザーのデータからおすすめの本を表示するサービスです。
+</p>
 
-<datalist id="books"></datalist>
+<p>
+シンプルなアルゴリズムを用いて、関連性の高い本をランキング形式で提示します。
+</p>
 
-<button onclick="recommend()">おすすめを見る</button>
+<p>
+個人開発のプロジェクトとして運営されています。
+</p>
 
-<div id="result"></div>
-
-<!-- ▼ フッター -->
-<div class="footer">
-  <a href="about.html">About</a> |
-  <a href="privacy.html">Privacy</a>
-</div>
+<a href="index.html">← 戻る</a>
 
 </div>
-
-<script>
-
-const users = [
-  ["明暗","ねじまき鳥クロニクル","海辺のカフカ","1Q84","ノルウェイの森"],
-  ["グレート・ギャツビー","日はまた昇る","武器よさらば","老人と海"],
-  ["ねじまき鳥クロニクル","海辺のカフカ","世界の終りとハードボイルドワンダーランド"],
-  ["明暗","こころ","坊っちゃん","吾輩は猫である"],
-  ["グレート・ギャツビー","華麗なるギャツビー","夜はやさし"],
-  ["1Q84","ノルウェイの森","色彩を持たない多崎つくる"],
-  ["ねじまき鳥クロニクル","スプートニクの恋人","ダンスダンスダンス"],
-  ["明暗","三四郎","それから","門"],
-  ["海辺のカフカ","風の歌を聴け","1973年のピンボール"],
-  ["老人と海","誰がために鐘は鳴る"],
-  ["こころ","夢十夜"],
-  ["坊っちゃん","草枕"],
-  ["1Q84","騎士団長殺し"],
-  ["ノルウェイの森","国境の南、太陽の西"],
-  ["グレート・ギャツビー","楽園のこちら側"]
-];
-
-const allBooks = [...new Set(users.flat())];
-const datalist = document.getElementById("books");
-
-allBooks.forEach(book => {
-  let option = document.createElement("option");
-  option.value = book;
-  datalist.appendChild(option);
-});
-
-function recommend(){
-  let input = [
-    b1.value, b2.value, b3.value, b4.value, b5.value
-  ].filter(v => v !== "");
-
-  let scores = {};
-
-  users.forEach(user => {
-    let match = user.filter(book => input.includes(book)).length;
-
-    if(match > 0){
-      user.forEach(book => {
-        if(!input.includes(book)){
-          scores[book] = (scores[book] || 0) + match;
-        }
-      });
-    }
-  });
-
-  let sorted = Object.entries(scores)
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,25);
-
-  let html = "";
-  sorted.forEach(([book,score])=>{
-    html += book + " ("+score+")<br>";
-  });
-
-  document.getElementById("result").innerHTML = html || "候補が足りないかも";
-}
-
-</script>
 
 </body>
 </html>
