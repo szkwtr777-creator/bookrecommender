@@ -3,29 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <title>おすすめ本ジェネレータ</title>
+
+<style>
+body{
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont;
+  background: linear-gradient(135deg,#1e1e2f,#2c2c54);
+  color:white;
+  text-align:center;
+}
+
+.container{
+  max-width:400px;
+  margin:80px auto;
+  padding:30px;
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;
+  backdrop-filter:blur(10px);
+}
+
+h2{
+  margin-bottom:10px;
+}
+
+p{
+  color:#aaa;
+}
+
+input{
+  width:90%;
+  padding:10px;
+  margin:8px;
+  border:none;
+  border-radius:10px;
+  outline:none;
+}
+
+button{
+  padding:12px 20px;
+  margin-top:15px;
+  border:none;
+  border-radius:10px;
+  background:#6c5ce7;
+  color:white;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:0.8;
+}
+
+#result{
+  margin-top:20px;
+  text-align:left;
+}
+</style>
+
 </head>
-<body style="font-family:sans-serif; text-align:center;">
+
+<body>
+
+<div class="container">
 
 <h2>おすすめ本ジェネレータ</h2>
-
 <p>好きな本を5冊入力してね</p>
 
-<input id="b1" list="books"><br><br>
-<input id="b2" list="books"><br><br>
-<input id="b3" list="books"><br><br>
-<input id="b4" list="books"><br><br>
-<input id="b5" list="books"><br><br>
+<input id="b1" list="books"><br>
+<input id="b2" list="books"><br>
+<input id="b3" list="books"><br>
+<input id="b4" list="books"><br>
+<input id="b5" list="books"><br>
 
 <datalist id="books"></datalist>
 
 <button onclick="recommend()">おすすめを見る</button>
 
-<h3>結果</h3>
 <div id="result"></div>
+
+</div>
 
 <script>
 
-// ▼ データ
 const users = [
   ["明暗","ねじまき鳥クロニクル","海辺のカフカ","1Q84","ノルウェイの森"],
   ["グレート・ギャツビー","日はまた昇る","武器よさらば","老人と海"],
@@ -44,7 +102,6 @@ const users = [
   ["グレート・ギャツビー","楽園のこちら側"]
 ];
 
-// ▼ サジェスト
 const allBooks = [...new Set(users.flat())];
 const datalist = document.getElementById("books");
 
@@ -54,21 +111,18 @@ allBooks.forEach(book => {
   datalist.appendChild(option);
 });
 
-// ▼ レコメンド
 function recommend(){
-  let input = [
-    b1.value, b2.value, b3.value, b4.value, b5.value
-  ].filter(v => v !== "");
+  let input = [b1.value,b2.value,b3.value,b4.value,b5.value].filter(v=>v);
 
   let scores = {};
 
-  users.forEach(user => {
-    let match = user.filter(book => input.includes(book)).length;
+  users.forEach(user=>{
+    let match = user.filter(book=>input.includes(book)).length;
 
-    if(match > 0){
-      user.forEach(book => {
+    if(match>0){
+      user.forEach(book=>{
         if(!input.includes(book)){
-          scores[book] = (scores[book] || 0) + match;
+          scores[book]=(scores[book]||0)+match;
         }
       });
     }
@@ -80,10 +134,11 @@ function recommend(){
 
   let html = "";
   sorted.forEach(([book,score])=>{
-    html += book + " ("+score+")<br>";
+    html += "・"+book+"<br>";
   });
 
-  document.getElementById("result").innerHTML = html || "候補が足りないかも";
+  document.getElementById("result").innerHTML =
+    html || "候補がまだ少ないかも";
 }
 
 </script>
