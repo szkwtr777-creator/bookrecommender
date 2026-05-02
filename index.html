@@ -61,6 +61,26 @@ button {
 }
 </style>
 
+<!-- ▼ Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBC1xSpVO66BjEQWg0LY3DMprR8OnVA1Qc",
+  authDomain: "book-recommender-44749.firebaseapp.com",
+  projectId: "book-recommender-44749",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.db = db;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+window.collection = collection;
+</script>
+
 </head>
 
 <body>
@@ -82,7 +102,6 @@ button {
 
 <div id="result"></div>
 
-<!-- ▼ フッター -->
 <div class="footer">
   <a href="about.html">About</a> |
   <a href="privacy.html">Privacy</a>
@@ -92,24 +111,14 @@ button {
 
 <script>
 
-const users = [
+let users = [
   ["明暗","ねじまき鳥クロニクル","海辺のカフカ","1Q84","ノルウェイの森"],
   ["グレート・ギャツビー","日はまた昇る","武器よさらば","老人と海"],
   ["ねじまき鳥クロニクル","海辺のカフカ","世界の終りとハードボイルドワンダーランド"],
-  ["明暗","こころ","坊っちゃん","吾輩は猫である"],
-  ["グレート・ギャツビー","華麗なるギャツビー","夜はやさし"],
-  ["1Q84","ノルウェイの森","色彩を持たない多崎つくる"],
-  ["ねじまき鳥クロニクル","スプートニクの恋人","ダンスダンスダンス"],
-  ["明暗","三四郎","それから","門"],
-  ["海辺のカフカ","風の歌を聴け","1973年のピンボール"],
-  ["老人と海","誰がために鐘は鳴る"],
-  ["こころ","夢十夜"],
-  ["坊っちゃん","草枕"],
-  ["1Q84","騎士団長殺し"],
-  ["ノルウェイの森","国境の南、太陽の西"],
-  ["グレート・ギャツビー","楽園のこちら側"]
+  ["明暗","こころ","坊っちゃん","吾輩は猫である"]
 ];
 
+// サジェスト
 const allBooks = [...new Set(users.flat())];
 const datalist = document.getElementById("books");
 
@@ -119,10 +128,18 @@ allBooks.forEach(book => {
   datalist.appendChild(option);
 });
 
-function recommend(){
+// ▼ レコメンド（Firebase対応）
+async function recommend(){
+
   let input = [
     b1.value, b2.value, b3.value, b4.value, b5.value
   ].filter(v => v !== "");
+
+  // Firebaseから取得
+  const snapshot = await getDocs(collection(db, "books"));
+  snapshot.forEach(doc => {
+    users.push(doc.data().list);
+  });
 
   let scores = {};
 
@@ -148,6 +165,11 @@ function recommend(){
   });
 
   document.getElementById("result").innerHTML = html || "候補が足りないかも";
+
+  // Firebaseに保存
+  await addDoc(collection(db, "books"), {
+    list: input
+  });
 }
 
 </script>
