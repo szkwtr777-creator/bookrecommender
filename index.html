@@ -24,16 +24,19 @@ body {
   text-align: center;
 }
 
+/* ② タイトル2倍 */
 .title {
-  font-size: 32px; /* 2回り大きめ */
+  font-size: 48px;
   font-weight: bold;
 }
 
+/* ② サブタイトル2倍 */
 .subtitle {
-  font-size: 20px; /* 1回り大きめ */
+  font-size: 32px;
   margin-top: 10px;
 }
 
+/* ルール */
 .rules {
   text-align: left;
   margin: 20px 0;
@@ -45,10 +48,12 @@ body {
   margin-bottom: 5px;
 }
 
+/* ① 入力欄2倍 */
 input {
   width: 100%;
-  padding: 10px;
+  padding: 20px; /* ←ここで高さアップ */
   margin: 10px 0;
+  font-size: 18px;
 }
 
 .suggestions {
@@ -57,13 +62,21 @@ input {
 }
 
 .suggestions div {
-  padding: 5px;
+  padding: 8px;
   cursor: pointer;
 }
 
+/* ボタン */
 button {
   margin: 10px;
-  padding: 10px 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* ③ ランキング文字 */
+.small-text {
+  font-size: 14px;
+  line-height: 1.6;
 }
 </style>
 
@@ -110,7 +123,6 @@ window.collection = collection;
 
 <div id="result"></div>
 
-<!-- フッター -->
 <div style="margin-top:20px; font-size:14px;">
   <a href="about.html">About</a> |
   <a href="privacy.html">Privacy</a>
@@ -198,10 +210,11 @@ async function recommend(){
     .sort((a,b)=>b[1]-a[1])
     .slice(0,20);
 
-  let html = "<h3>おすすめ</h3>";
+  let html = "<h3>おすすめ</h3><div class='small-text'>";
   sorted.forEach(([title])=>{
     html += title + "<br>";
   });
+  html += "</div>";
 
   document.getElementById("result").innerHTML = html || "候補が足りないかも";
 
@@ -225,10 +238,11 @@ async function showStats(){
     .sort((a,b)=>b[1]-a[1])
     .slice(0,10);
 
-  let html = "<h3>人気ランキング</h3>";
+  let html = "<h3>人気ランキング</h3><div class='small-text'>";
   sorted.forEach(([title,c])=>{
     html += title + " (" + c + ")<br>";
   });
+  html += "</div>";
 
   document.getElementById("result").innerHTML = html || "データがまだ少ない";
 }
