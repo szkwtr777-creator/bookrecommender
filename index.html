@@ -7,7 +7,7 @@
 <style>
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,6 +22,27 @@ body {
   width: 90%;
   max-width: 700px;
   text-align: center;
+}
+
+.title {
+  font-size: 32px; /* 2回り大きめ */
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 20px; /* 1回り大きめ */
+  margin-top: 10px;
+}
+
+.rules {
+  text-align: left;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.rules-title {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 input {
@@ -72,7 +93,15 @@ window.collection = collection;
 
 <div class="container">
 
-<h2>おすすめ本ジェネレータ</h2>
+<div class="title">おすすめ本ジェネレータ</div>
+<div class="subtitle">お気に入りの本を入力してね</div>
+
+<div class="rules">
+  <div class="rules-title">【ルール】</div>
+  <div>・洋書は翻訳版の名前で入力してね</div>
+  <div>・翻訳版が複数あった場合は一番上に表示されたものを入力してね</div>
+  <div>・巻数が複数あるものは1巻を入力してね（シリーズモノはそれぞれ入力でOK）</div>
+</div>
 
 <div id="inputs"></div>
 
@@ -81,6 +110,7 @@ window.collection = collection;
 
 <div id="result"></div>
 
+<!-- フッター -->
 <div style="margin-top:20px; font-size:14px;">
   <a href="about.html">About</a> |
   <a href="privacy.html">Privacy</a>
@@ -138,7 +168,7 @@ for(let i=0;i<5;i++){
   document.getElementById("inputs").appendChild(wrapper);
 }
 
-// ▼ レコメンド
+// レコメンド
 async function recommend(){
 
   let users = [];
@@ -169,19 +199,18 @@ async function recommend(){
     .slice(0,20);
 
   let html = "<h3>おすすめ</h3>";
-  sorted.forEach(([title,score])=>{
+  sorted.forEach(([title])=>{
     html += title + "<br>";
   });
 
   document.getElementById("result").innerHTML = html || "候補が足りないかも";
 
-  // 保存
   await addDoc(collection(db, "books"), {
     list: selectedBooks
   });
 }
 
-// ▼ ランキング
+// ランキング
 async function showStats(){
   const snapshot = await getDocs(collection(db, "books"));
   let count = {};
