@@ -39,6 +39,11 @@ input {
   padding: 5px;
   cursor: pointer;
 }
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+}
 </style>
 
 <!-- Firebase -->
@@ -72,6 +77,7 @@ window.collection = collection;
 <div id="inputs"></div>
 
 <button onclick="recommend()">おすすめ</button>
+<button onclick="showStats()">人気ランキング</button>
 
 <div id="result"></div>
 
@@ -127,7 +133,7 @@ for(let i=0;i<5;i++){
   document.getElementById("inputs").appendChild(wrapper);
 }
 
-// レコメンド
+// ▼ レコメンド
 async function recommend(){
 
   let users = [];
@@ -157,7 +163,7 @@ async function recommend(){
     .sort((a,b)=>b[1]-a[1])
     .slice(0,20);
 
-  let html = "";
+  let html = "<h3>おすすめ</h3>";
   sorted.forEach(([title,score])=>{
     html += title + "<br>";
   });
@@ -168,6 +174,29 @@ async function recommend(){
   await addDoc(collection(db, "books"), {
     list: selectedBooks
   });
+}
+
+// ▼ ランキング
+async function showStats(){
+  const snapshot = await getDocs(collection(db, "books"));
+  let count = {};
+
+  snapshot.forEach(doc => {
+    doc.data().list.forEach(book => {
+      count[book.title] = (count[book.title] || 0) + 1;
+    });
+  });
+
+  let sorted = Object.entries(count)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,10);
+
+  let html = "<h3>人気ランキング</h3>";
+  sorted.forEach(([title,c])=>{
+    html += title + " (" + c + ")<br>";
+  });
+
+  document.getElementById("result").innerHTML = html || "データがまだ少ない";
 }
 
 </script>
