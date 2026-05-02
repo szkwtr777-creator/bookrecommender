@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>おすすめ本ジェネレータ</title>
+<title>Book Recommender</title>
 
 <style>
 body {
@@ -17,51 +17,31 @@ body {
 
 .container {
   background: white;
-  padding: 40px;
+  padding: 30px;
   border-radius: 12px;
   width: 90%;
   max-width: 700px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 input {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
 }
 
-button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background: black;
-  color: white;
-  font-size: 16px;
-}
-
-#result {
-  margin-top: 20px;
+.suggestions {
   text-align: left;
-  line-height: 1.6;
+  background: #eee;
 }
 
-.footer {
-  margin-top: 30px;
-  font-size: 14px;
-}
-
-.footer a {
-  color: black;
-  text-decoration: none;
-  margin: 0 10px;
+.suggestions div {
+  padding: 5px;
+  cursor: pointer;
 }
 </style>
 
-<!-- ▼ Firebase -->
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -88,54 +68,70 @@ window.collection = collection;
 <div class="container">
 
 <h2>おすすめ本ジェネレータ</h2>
-<p>好きな本を5冊入力してね</p>
 
-<input id="b1" list="books">
-<input id="b2" list="books">
-<input id="b3" list="books">
-<input id="b4" list="books">
-<input id="b5" list="books">
+<div id="inputs"></div>
 
-<datalist id="books"></datalist>
-
-<button onclick="recommend()">おすすめを見る</button>
+<button onclick="recommend()">おすすめ</button>
 
 <div id="result"></div>
-
-<div class="footer">
-  <a href="about.html">About</a> |
-  <a href="privacy.html">Privacy</a>
-</div>
 
 </div>
 
 <script>
 
-let users = [
-  ["明暗","ねじまき鳥クロニクル","海辺のカフカ","1Q84","ノルウェイの森"],
-  ["グレート・ギャツビー","日はまた昇る","武器よさらば","老人と海"],
-  ["ねじまき鳥クロニクル","海辺のカフカ","世界の終りとハードボイルドワンダーランド"],
-  ["明暗","こころ","坊っちゃん","吾輩は猫である"]
-];
+let selectedBooks = [];
 
-// サジェスト
-const allBooks = [...new Set(users.flat())];
-const datalist = document.getElementById("books");
+// 入力欄生成
+for(let i=0;i<5;i++){
+  const wrapper = document.createElement("div");
 
-allBooks.forEach(book => {
-  let option = document.createElement("option");
-  option.value = book;
-  datalist.appendChild(option);
-});
+  const input = document.createElement("input");
+  input.placeholder = "本を検索";
 
-// ▼ レコメンド（Firebase対応）
+  const suggest = document.createElement("div");
+  suggest.className = "suggestions";
+
+  input.addEventListener("input", async () => {
+    const q = input.value;
+    if(q.length < 2) return;
+
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}`);
+    const data = await res.json();
+
+    suggest.innerHTML = "";
+
+    data.items?.slice(0,5).forEach(item => {
+      const info = item.volumeInfo;
+      const title = info.title;
+      const author = info.authors?.[0] || "";
+
+      const div = document.createElement("div");
+      div.innerText = title + " / " + author;
+
+      div.onclick = () => {
+        input.value = title;
+        selectedBooks[i] = {
+          title,
+          author,
+          id: item.id
+        };
+        suggest.innerHTML = "";
+      };
+
+      suggest.appendChild(div);
+    });
+  });
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(suggest);
+  document.getElementById("inputs").appendChild(wrapper);
+}
+
+// レコメンド
 async function recommend(){
 
-  let input = [
-    b1.value, b2.value, b3.value, b4.value, b5.value
-  ].filter(v => v !== "");
+  let users = [];
 
-  // Firebaseから取得
   const snapshot = await getDocs(collection(db, "books"));
   snapshot.forEach(doc => {
     users.push(doc.data().list);
@@ -144,12 +140,14 @@ async function recommend(){
   let scores = {};
 
   users.forEach(user => {
-    let match = user.filter(book => input.includes(book)).length;
+    let match = user.filter(b =>
+      selectedBooks.some(s => s?.id === b.id)
+    ).length;
 
     if(match > 0){
       user.forEach(book => {
-        if(!input.includes(book)){
-          scores[book] = (scores[book] || 0) + match;
+        if(!selectedBooks.some(s => s?.id === book.id)){
+          scores[book.title] = (scores[book.title] || 0) + match;
         }
       });
     }
@@ -157,18 +155,18 @@ async function recommend(){
 
   let sorted = Object.entries(scores)
     .sort((a,b)=>b[1]-a[1])
-    .slice(0,25);
+    .slice(0,20);
 
   let html = "";
-  sorted.forEach(([book,score])=>{
-    html += book + " ("+score+")<br>";
+  sorted.forEach(([title,score])=>{
+    html += title + "<br>";
   });
 
   document.getElementById("result").innerHTML = html || "候補が足りないかも";
 
-  // Firebaseに保存
+  // 保存
   await addDoc(collection(db, "books"), {
-    list: input
+    list: selectedBooks
   });
 }
 
