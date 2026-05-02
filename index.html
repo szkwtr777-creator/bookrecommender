@@ -95,7 +95,7 @@ for(let i=0;i<5;i++){
     const q = input.value;
     if(q.length < 2) return;
 
-    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}`);
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&langRestrict=ja`);
     const data = await res.json();
 
     suggest.innerHTML = "";
